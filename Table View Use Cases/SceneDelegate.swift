@@ -20,7 +20,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
 
         // Create the SwiftUI view that provides the window contents.
-        let contentView = ContentView()
+        var movies = [Movie]()
+        if let jsonData = Utils.readLocalFile(forName: "movies") {
+            do {
+                if let jsonArray = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [[String: Any]] {
+                    for dict in jsonArray {
+                        let movie = Movie(dict: dict)
+                        movies.append(movie)
+                    }
+                }
+            } catch {
+                print("decode error")
+            }
+        }
+        
+        let contentView = ContentView(movies: movies)
 
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {
